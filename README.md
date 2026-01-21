@@ -65,3 +65,9 @@ http://127.0.0.1:8000/
 - O banco de dados (db.sqlite3) não está versionado.
 - O projeto utiliza autenticação padrão do Django.
 - Interface construída com templates Django e Bootstrap
+
+(assets/DER_sistema_de_eventos.png)
+
+```
+
+![teste](assets/DER_sistema_de_eventos.png)
