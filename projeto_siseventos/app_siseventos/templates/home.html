@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+    />
+
+    <title>SisEventos</title>
+  </head>
+
+  <body
+    style="
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    "
+  >
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-dark" style="background-color: #0b132b; height: 100px">
+      <div class="container-fluid d-flex justify-content-between align-items-center">
+
+        <a href="{% url 'app_siseventos:home' %}"
+           class="navbar-brand fs-1 text-decoration-none">
+          SisEventos
+        </a>
+
+        <div class="d-flex gap-3">
+          {% if user.is_authenticated %}
+            <a href="{% url 'app_siseventos:meus_eventos' %}"
+               class="btn btn-outline-light">
+              Meus Eventos
+            </a>
+
+            <a href="{% url 'app_siseventos:logout' %}"
+               class="btn btn-danger">
+              Logout
+            </a>
+          {% else %}
+            <a href="{% url 'app_siseventos:login' %}"
+               class="btn btn-outline-light">
+              Login
+            </a>
+          {% endif %}
+        </div>
+
+      </div>
+    </nav>
+
+    {% if messages %}
+      <div class="container mt-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+
+    <!-- CONTEÚDO -->
+    <div class="container d-flex justify-content-center align-items-center"
+         style="min-height: calc(100vh - 100px)">
+      <div class="card shadow-lg"
+           style="width: 100%; max-width: 800px; background: rgba(255,255,255,0.95)">
+        <div class="card-body p-5">
+
+          <h1 class="text-center mb-4 fw-bold">
+            Eventos disponíveis
+          </h1>
+
+          {% if user.is_staff %}
+            <p class="text-center">
+              <a href="{% url 'app_siseventos:cadastrar_evento' %}"
+                 class="btn btn-primary">
+                Cadastrar novo evento
+              </a>
+            </p>
+          {% endif %}
+
+          <ul class="list-group list-group-flush">
+
+            {% for evento in eventos %}
+              <li class="list-group-item">
+
+                <h3>{{ evento.titulo }}</h3>
+
+                <p>{{ evento.descricao }}</p>
+                <p><strong>Data:</strong> {{ evento.data|date:"d/m/Y H:i" }}</p>
+                <p><strong>Local:</strong> {{ evento.local }}</p>
+
+                {% if user.is_staff %}
+                  <div class="mb-2">
+                    <a href="{% url 'app_siseventos:editar_evento' evento.id %}"
+                       class="btn btn-sm btn-outline-secondary">
+                      Editar
+                    </a>
+
+                    <a href="{% url 'app_siseventos:deletar_evento' evento.id %}"
+                       onclick="return confirm('Tem certeza que deseja apagar este evento?');"
+                       class="btn btn-sm btn-outline-danger">
+                      Deletar
+                    </a>
+
+                    <a href="{% url 'app_siseventos:inscritos_evento' evento.id %}"
+                       class="btn btn-sm btn-info">
+                      Ver inscritos
+                    </a>
+                  </div>
+                {% endif %}
+
+                {% if user.is_authenticated %}
+                  {% if evento.id in eventos_inscritos %}
+                    <a href="{% url 'app_siseventos:cancelar_inscricao' evento.id %}"
+                       class="btn btn-warning">
+                      Cancelar inscrição
+                    </a>
+                  {% else %}
+                    <a href="{% url 'app_siseventos:inscrever_evento' evento.id %}"
+                       class="btn btn-success">
+                      Inscrever-se
+                    </a>
+                  {% endif %}
+                {% else %}
+                  <p>Faça login para se inscrever</p>
+                {% endif %}
+
+              </li>
+            {% empty %}
+              <li class="list-group-item">
+                Nenhum evento cadastrado.
+              </li>
+            {% endfor %}
+
+          </ul>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
